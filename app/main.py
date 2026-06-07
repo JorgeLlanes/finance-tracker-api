@@ -3,6 +3,7 @@ from app.config import settings
 
 app = FastAPI(title=settings.app_name)
 
+
 @app.get("/health")
 def root():
     return {"message": "Hello World"}
