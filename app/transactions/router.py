@@ -24,4 +24,4 @@ def get_transaction_by_id(id: int, db: Session = Depends(get_db)):
 
 @router.delete("/{id}")
 def delete_transaction(id: int, db: Session = Depends(get_db)):
-    pass
+    return service.delete_transaction(id, db)

@@ -33,3 +33,17 @@ def get_transaction_by_id(id: int, db: Session):
         raise HTTPException(status_code=404, detail="Transaction not found")
 
     return transaction
+
+
+def delete_transaction(id: int, db: Session):
+    stmt = select(Transaction).where(Transaction.id == id)
+    result = db.execute(stmt)
+    transaction = result.scalar_one_or_none()
+
+    if transaction is None:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    db.delete(transaction)
+    db.commit()
+
+    return {"message": "Transaction successfully deleted"}
