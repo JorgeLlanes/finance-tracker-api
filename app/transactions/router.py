@@ -1,3 +1,4 @@
+from app.transactions import service
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -8,7 +9,7 @@ router = APIRouter()
 
 @router.post("/", response_model=TransactionResponse)
 def create_transaction(body: TransactionCreate, db: Session = Depends(get_db)):
-    pass
+    return service.create_transaction(body, db)
 
 
 @router.get("/", response_model=list[TransactionResponse])
