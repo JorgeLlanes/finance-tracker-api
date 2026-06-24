@@ -14,12 +14,12 @@ def create_transaction(body: TransactionCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=list[TransactionResponse])
 def get_transactions(db: Session = Depends(get_db)):
-    pass
+    return service.get_transactions(db)
 
 
 @router.get("/{id}", response_model=TransactionResponse)
-def get_transaction(id: int, db: Session = Depends(get_db)):
-    pass
+def get_transaction_by_id(id: int, db: Session = Depends(get_db)):
+    return service.get_transaction_by_id(id, db)
 
 
 @router.delete("/{id}")
