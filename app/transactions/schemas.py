@@ -16,3 +16,10 @@ class TransactionResponse(TransactionCreate):
 
     id: int
     created_at: datetime
+
+
+class TransactionUpdate(BaseModel):
+    amount: Decimal | None = None
+    description: str | None = Field(default=None, max_length=72)
+    category: str | None = Field(default=None, max_length=32)
+    transaction_type: TransactionEnum | None = None

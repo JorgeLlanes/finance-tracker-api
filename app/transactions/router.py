@@ -2,7 +2,11 @@ from app.transactions import service
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.transactions.schemas import TransactionCreate, TransactionResponse
+from app.transactions.schemas import (
+    TransactionCreate,
+    TransactionResponse,
+    TransactionUpdate,
+)
 
 router = APIRouter()
 
@@ -20,6 +24,11 @@ def get_transactions(db: Session = Depends(get_db)):
 @router.get("/{id}", response_model=TransactionResponse)
 def get_transaction_by_id(id: int, db: Session = Depends(get_db)):
     return service.get_transaction_by_id(id, db)
+
+
+@router.patch("/{id}", response_model=TransactionResponse)
+def update_transaction(id: int, body: TransactionUpdate, db: Session = Depends(get_db)):
+    return service.update_transaction(id, body, db)
 
 
 @router.delete("/{id}")
