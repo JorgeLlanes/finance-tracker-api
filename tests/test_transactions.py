@@ -72,10 +72,13 @@ def test_get_transaction_by_id(client):
 
 
 def test_get_transaction_by_id_not_found(client):
-    response = client.get("/transactions/9999")
+    nonexistent_id = 9999
+    response = client.get(f"/transactions/{nonexistent_id}")
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Transaction not found"
+    assert (
+        response.json()["detail"] == f"Transaction with id {nonexistent_id} not found"
+    )
 
 
 def test_update_transaction(client):
@@ -102,10 +105,15 @@ def test_update_transaction(client):
 
 
 def test_update_transaction_not_found(client):
-    response = client.patch("/transactions/8888", json={"category": "trip"})
+    nonexistent_id = 8888
+    response = client.patch(
+        f"/transactions/{nonexistent_id}", json={"category": "trip"}
+    )
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Transaction not found"
+    assert (
+        response.json()["detail"] == f"Transaction with id {nonexistent_id} not found"
+    )
 
 
 def test_delete_transaction(client):
@@ -127,11 +135,16 @@ def test_delete_transaction(client):
 
     response_get = client.get(f"/transactions/{created_id}")
     assert response_get.status_code == 404
-    assert response_get.json()["detail"] == "Transaction not found"
+    assert (
+        response_get.json()["detail"] == f"Transaction with id {created_id} not found"
+    )
 
 
 def test_delete_transaction_not_found(client):
-    response = client.delete("/transactions/7777")
+    nonexistent_id = 7777
+    response = client.delete(f"/transactions/{nonexistent_id}")
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Transaction not found"
+    assert (
+        response.json()["detail"] == f"Transaction with id {nonexistent_id} not found"
+    )
