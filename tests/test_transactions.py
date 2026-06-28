@@ -1,10 +1,12 @@
+from decimal import Decimal
+
+
 def test_health_check(client):
     response = client.get("/health")
     assert response.status_code == 200
 
 
 def test_create_transaction(client):
-    # Arrange — set up the data you need
     payload = {
         "amount": 14.99,
         "description": "testing subscription for apple music",
@@ -12,10 +14,8 @@ def test_create_transaction(client):
         "transaction_type": "expense",
     }
 
-    # Act — perform the actual action being tested
     response = client.post("/transactions/", json=payload)
 
-    # Assert — verify the outcome is correct
     assert response.status_code == 201
     data = response.json()
     assert data["description"] == "testing subscription for apple music"
@@ -73,6 +73,36 @@ def test_get_transaction_by_id(client):
 
 def test_get_transaction_by_id_not_found(client):
     response = client.get("/transactions/9999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Transaction not found"
+
+
+def test_update_transaction(client):
+    payload = {
+        "amount": 129.99,
+        "description": "testing updating transaction - groceries",
+        "category": "grocery",
+        "transaction_type": "expense",
+    }
+
+    response = client.post("/transactions/", json=payload)
+    assert response.status_code == 201
+
+    created_id = response.json()["id"]
+    response_update = client.patch(
+        f"/transactions/{created_id}", json={"amount": 89.99}
+    )
+    assert response_update.status_code == 200
+
+    data = response_update.json()
+    assert Decimal(data["amount"]) == Decimal("89.99")
+    assert data["description"] == "testing updating transaction - groceries"
+    assert data["category"] == "grocery"
+
+
+def test_update_transaction_not_found(client):
+    response = client.patch("/transactions/8888", json={"category": "trip"})
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Transaction not found"
