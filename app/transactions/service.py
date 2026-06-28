@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.transactions.models import Transaction
 from app.transactions.schemas import TransactionCreate, TransactionUpdate
-from fastapi import HTTPException
+from app.transactions.exceptions import TransactionNotFoundError
 
 
 def create_transaction(body: TransactionCreate, db: Session):
@@ -30,7 +30,7 @@ def get_transaction_by_id(id: int, db: Session):
     transaction = result.scalar_one_or_none()
 
     if transaction is None:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+        raise TransactionNotFoundError(id)
 
     return transaction
 
@@ -41,7 +41,7 @@ def update_transaction(id: int, body: TransactionUpdate, db: Session):
     transaction = result.scalar_one_or_none()
 
     if transaction is None:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+        raise TransactionNotFoundError(id)
 
     update_data = body.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -58,7 +58,7 @@ def delete_transaction(id: int, db: Session):
     transaction = result.scalar_one_or_none()
 
     if transaction is None:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+        raise TransactionNotFoundError(id)
 
     db.delete(transaction)
     db.commit()
