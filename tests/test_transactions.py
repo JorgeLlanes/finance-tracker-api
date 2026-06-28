@@ -65,8 +65,14 @@ def test_get_transaction_by_id(client):
     created_id = response.json()["id"]
     response_get = client.get(f"/transactions/{created_id}")
 
-
     assert response_get.status_code == 200
     data = response_get.json()
     assert data["description"] == "testing subscription for gym membership"
     assert data["category"] == "membership"
+
+
+def test_get_transaction_by_id_not_found(client):
+    response = client.get("/transactions/9999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Transaction not found"
