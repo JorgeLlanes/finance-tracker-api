@@ -106,3 +106,32 @@ def test_update_transaction_not_found(client):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Transaction not found"
+
+
+def test_delete_transaction(client):
+    payload = {
+        "amount": 59.99,
+        "description": "att wifi subscription",
+        "category": "subscription",
+        "transaction_type": "expense",
+    }
+
+    response = client.post("/transactions/", json=payload)
+    assert response.status_code == 201
+
+    created_id = response.json()["id"]
+    response_delete = client.delete(f"/transactions/{created_id}")
+
+    assert response_delete.status_code == 200
+    assert response_delete.json()["message"] == "Transaction successfully deleted"
+
+    response_get = client.get(f"/transactions/{created_id}")
+    assert response_get.status_code == 404
+    assert response_get.json()["detail"] == "Transaction not found"
+
+
+def test_delete_transaction_not_found(client):
+    response = client.delete("/transactions/7777")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Transaction not found"
