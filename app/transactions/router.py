@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.transactions.schemas import (
+    CategorizeRequest,
+    CategorizeResponse,
     TransactionCreate,
     TransactionResponse,
     TransactionUpdate,
@@ -46,3 +48,8 @@ def delete_transaction(id: int, db: Session = Depends(get_db)):
         return service.delete_transaction(id, db)
     except TransactionNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post("/categorize", response_model=CategorizeResponse)
+def categorize_transaction(body: CategorizeRequest):
+    return service.categorize_transaction(body)

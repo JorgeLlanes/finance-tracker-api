@@ -23,3 +23,11 @@ class TransactionUpdate(BaseModel):
     description: str | None = Field(default=None, max_length=72)
     category: str | None = Field(default=None, max_length=32)
     transaction_type: TransactionEnum | None = None
+
+
+class CategorizeRequest(BaseModel):
+    description: str = Field(max_length=72)
+
+
+class CategorizeResponse(BaseModel):
+    category: str = Field(max_length=32)

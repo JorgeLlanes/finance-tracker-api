@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     debug: bool = False
     database_url: str
     test_database_url: str
+    anthropic_api_key: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
