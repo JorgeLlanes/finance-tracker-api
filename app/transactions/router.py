@@ -10,6 +10,7 @@ from app.transactions.schemas import (
     TransactionUpdate,
 )
 from app.transactions.exceptions import TransactionNotFoundError
+from app.ai.exceptions import AIServiceUnavailableError
 
 router = APIRouter()
 
@@ -52,4 +53,7 @@ def delete_transaction(id: int, db: Session = Depends(get_db)):
 
 @router.post("/categorize", response_model=CategorizeResponse)
 def categorize_transaction(body: CategorizeRequest):
-    return service.categorize_transaction(body)
+    try:
+        return service.categorize_transaction(body)
+    except AIServiceUnavailableError as e:
+        raise HTTPException(status_code=503, detail=str(e))
