@@ -1,4 +1,7 @@
 from decimal import Decimal
+from unittest.mock import patch
+
+from app.ai.exceptions import AIServiceUnavailableError
 
 
 def test_health_check(client):
@@ -148,3 +151,31 @@ def test_delete_transaction_not_found(client):
     assert (
         response.json()["detail"] == f"Transaction with id {nonexistent_id} not found"
     )
+
+
+def test_categorize_transaction(client):
+    with patch(
+        "app.transactions.service.ai_client.categorize_transaction"
+    ) as mock_categorize:
+        mock_categorize.return_value = "subscription"
+
+        response = client.post(
+            "/transactions/categorize", json={"description": "Netflix"}
+        )
+
+        assert response.status_code == 200
+        assert response.json()["category"] == "subscription"
+
+
+def test_categorize_transaction_ai_failure(client):
+    with patch(
+        "app.transactions.service.ai_client.categorize_transaction"
+    ) as mock_categorize:
+        mock_categorize.side_effect = AIServiceUnavailableError()
+
+        response = client.post(
+            "/transactions/categorize", json={"description": "Netflix"}
+        )
+
+        assert response.status_code == 503
+        assert response.json()["detail"] == "AI categorization service unavailable"

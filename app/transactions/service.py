@@ -1,8 +1,14 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.transactions.models import Transaction
-from app.transactions.schemas import TransactionCreate, TransactionUpdate
+from app.transactions.schemas import (
+    CategorizeRequest,
+    CategorizeResponse,
+    TransactionCreate,
+    TransactionUpdate,
+)
 from app.transactions.exceptions import TransactionNotFoundError
+from app.ai import client as ai_client
 
 
 def create_transaction(body: TransactionCreate, db: Session):
@@ -64,3 +70,8 @@ def delete_transaction(id: int, db: Session):
     db.commit()
 
     return {"message": "Transaction successfully deleted"}
+
+
+def categorize_transaction(body: CategorizeRequest):
+    category = ai_client.categorize_transaction(body.description)
+    return CategorizeResponse(category=category)
